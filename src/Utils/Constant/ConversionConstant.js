@@ -1,0 +1,15 @@
+export const INVALID_REQUEST_TITLE = 'Invalid Request';
+export const INVALID_INPUT_MESSAGE = 'Invalid Input please enter all the mandatory fields';
+export const INVALID_REQUEST_STATUS = 400;
+export const DUPLICATE_REQUEST_STATUS= 409;
+export const DUPLICATE_REQUEST_TITLE = 'User Already Exits';
+export const DUPLICATE_REQUEST_MESSAGE = 'User is already registered. please try to login if you forgot password try to reset.';
+export const LOG_OUT_TITLE = 'Logout';
+export const LOG_OUT_MESSAGE = 'Logout successfully';
+export const SUCCESS_STATUS = 200;
+export const USER_CREATED_STATUS = 201;
+export const USER_CREATED_TITLE = 'Registration sccuessfully.';
+export const USER_CREATED_MESSAGE = "User successfully saved in to DB";
+export const SOMETHING_WENT_WRONG_STATUS = 500;
+export const SOMETHING_WENT_WRONG_TITLE = "Something went wrong";
+export const SOMETHING_WENT_WRONG_MESSAGE = "There is something went wrong please try again after sometime.";
