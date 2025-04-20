@@ -7,12 +7,17 @@ const userSchema = mongoose.Schema({
         type: String,
         unique: true
     },
+    userId: String,
     password: String,
     role: {
         type: String,
         enum: ['user', 'admin','problem-setter'],
         default: 'user'
     },
+    post: {
+        type: Array
+    },
+    image: String,
     isVerified: {
         type: Boolean,
         default: false
