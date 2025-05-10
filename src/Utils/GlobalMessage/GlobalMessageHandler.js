@@ -6,6 +6,7 @@ dotenv.config();
 export const globalResponse = (res, status, message, title, userInfo) => {
   // send() -: when we use send method express try to convert object in to json and we can also send string
   // html e.t.c
+  // json() -: here we send the response in to the content-type  - application-json and response will be json
   if (!userInfo) {
     return res.status(status).json({
       title,

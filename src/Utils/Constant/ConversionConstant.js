@@ -13,3 +13,4 @@ export const USER_CREATED_MESSAGE = "User successfully saved in to DB";
 export const SOMETHING_WENT_WRONG_STATUS = 500;
 export const SOMETHING_WENT_WRONG_TITLE = "Something went wrong";
 export const SOMETHING_WENT_WRONG_MESSAGE = "There is something went wrong please try again after sometime.";
+export const ENTERED_USER_ID_UNIQUE = "Valid User id.";
