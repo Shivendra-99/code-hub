@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from 'dotenv';
 import AuthRoutes from "./Routes/Auth/AuthRoutes.js";
+import ProblemRoutes from "./Routes/Problem/ProblemRoutes.js";
 import ConnectWithDB from "./Utils/Database/db.js";
 import cors from 'cors';
 import cookieParser from "cookie-parser";
@@ -16,11 +17,12 @@ app.use(
     })
 )
 
-app.use(express.json());
+app.use(express.json()); // this middleware help us to get input in json
 app.use(cookieParser()); // here we are initialization of cookie parser using middleware 
 app.use(express.urlencoded({extended: true}));
 
-app.use('/api/v2',AuthRoutes);
+app.use('/api/v2/auth',AuthRoutes);
+app.use('/api/v2/problem',ProblemRoutes)
 
 app.get('/happy',(req,res)=>{
     res.status(200).send({

@@ -1,23 +1,35 @@
 import User from "../Model/User.js";
 import argon from "argon2";
-import jwt from "jsonwebtoken";
-import crypto from 'crypto';
-import * as Constant from '../Utils/Constant/ConversionConstant.js';
-import {globalResponse, generateTokenAndSetCookie} from '../Utils/GlobalMessage/GlobalMessageHandler.js';
+import crypto from "crypto";
+import * as Constant from "../Utils/Constant/ConversionConstant.js";
+import {
+  globalResponse,
+  generateTokenAndSetCookie,
+} from "../Utils/GlobalMessage/GlobalMessageHandler.js";
 
 export const registerUser = async (req, res) => {
   const { name, email, password } = req.body;
 
   try {
     if (email == undefined || email == null || !email || !name || !password) {
-      return globalResponse(res,Constant.INVALID_REQUEST_STATUS,Constant.INVALID_INPUT_MESSAGE,Constant.INVALID_REQUEST_TITLE);
+      return globalResponse(
+        res,
+        Constant.INVALID_REQUEST_STATUS,
+        Constant.INVALID_INPUT_MESSAGE,
+        Constant.INVALID_REQUEST_TITLE
+      );
     }
 
     // Finding User by Email id;
     const isEmailAlreadyPresent = await User.findOne({ email });
 
     if (isEmailAlreadyPresent) {
-      return globalResponse(res,Constant.DUPLICATE_REQUEST_STATUS,Constant.DUPLICATE_REQUEST_MESSAGE, Constant.DUPLICATE_REQUEST_TITLE);
+      return globalResponse(
+        res,
+        Constant.DUPLICATE_REQUEST_STATUS,
+        Constant.DUPLICATE_REQUEST_MESSAGE,
+        Constant.DUPLICATE_REQUEST_TITLE
+      );
     }
 
     //hashing password
@@ -30,7 +42,7 @@ export const registerUser = async (req, res) => {
     }); // When we use create means it will generate the _id and save in local not in the DB and still we can
     // Modify the data
 
-    generateTokenAndSetCookie(res,newUser);
+    generateTokenAndSetCookie(res, newUser);
 
     const token = crypto.randomBytes(32).toString("hex");
 
@@ -38,34 +50,40 @@ export const registerUser = async (req, res) => {
 
     await newUser.save();
 
-    // here JSON mean we are going to send json response
-    
-    return globalResponse(res,Constant.USER_CREATED_STATUS,Constant.USER_CREATED_MESSAGE,Constant.USER_CREATED_TITLE,newUser);
-
+    return globalResponse(
+      res,
+      Constant.USER_CREATED_STATUS,
+      Constant.USER_CREATED_MESSAGE,
+      Constant.USER_CREATED_TITLE,
+      newUser
+    );
   } catch (error) {
     console.log(error);
-    return globalResponse(res,Constant.SOMETHING_WENT_WRONG_STATUS,Constant.SOMETHING_WENT_WRONG_MESSAGE,Constant.SOMETHING_WENT_WRONG_MESSAGE);
+    return globalResponse(
+      res,
+      Constant.SOMETHING_WENT_WRONG_STATUS,
+      Constant.SOMETHING_WENT_WRONG_MESSAGE,
+      Constant.SOMETHING_WENT_WRONG_MESSAGE
+    );
   }
 };
 
-
 export const verifyUser = async (req, res) => {
-  // query mean request params and req.param.token means path variable(Spring boot)/ fixed parametter
+  // query means request params and req.param.token means path variable(Spring boot)/ fixed parametter
   const token = req.query.token;
   try {
     const isUserExit = await User.findOne({ verificationToken: token });
-    if(isUserExit==null || isUserExit == undefined){
+    if (isUserExit == null || isUserExit == undefined) {
       res.status(404).json({
         title: "Seems URL Expired/ Invalid URL",
         message: "Please request again for verification",
       });
-    }else if (isUserExit.isVerified) {
+    } else if (isUserExit.isVerified) {
       res.status(200).json({
-        title: "Already verifiyed", 
+        title: "Already verifiyed",
         message: "User verification successful",
       });
-    }
-    else if (isUserExit) {
+    } else if (isUserExit) {
       isUserExit.isVerified = true;
       await isUserExit.save();
       res.status(200).json({
@@ -79,49 +97,96 @@ export const verifyUser = async (req, res) => {
       message: "Please try after sometime",
     });
   }
-} 
+};
 
-export const login = async(req,res)=>{
-  const {email, password} = req.body;
+export const login = async (req, res) => {
+  const { email, password } = req.body;
 
-  if(!email || !password){
+  if (!email || !password) {
     res.status(400).send({
       title: "Invalid Request",
-      message: "Please enter the all mandtory field"
+      message: "Please enter the all mandtory field",
     });
   }
 
-  const isValidUser = await User.findOne({email});
+  const isValidUser = await User.findOne({ email });
 
-  if(isValidUser == null || isValidUser == undefined){
+  if (isValidUser == null || isValidUser == undefined) {
     res.status(404).send({
       title: "User Not found",
-      message: "Unable to find the user. Please pass correct value"
+      message: "Unable to find the user. Please pass correct value",
     });
-  }else{
-    const isValidPassword = await argon.verify(isValidUser.password,password);
+  } else {
+    const isValidPassword = await argon.verify(isValidUser.password, password);
     console.log(isValidPassword);
-    if(!isValidPassword){
-      res.clearCookie('authToken');
+    if (!isValidPassword) {
+      res.clearCookie("authToken");
       res.status(401).json({
         title: "Incorrect Password",
-        message: "Password is not correct. please enter valid password"
+        message: "Password is not correct. please enter valid password",
       });
-
-    }else{
-      
+    } else {
       //generating token and setting token
-      generateTokenAndSetCookie(res,isValidUser);
-     
+      generateTokenAndSetCookie(res, isValidUser);
+
       res.status(200).json({
         title: "Valid Password",
-        message: "Login Successfully"
+        message: "Login Successfully",
       });
     }
   }
-}
+};
 
-export const logout = async (req, res) =>{
+export const logout = async (req, res) => {
   res.clearCookie("authToken");
-  globalResponse(res,Constant.SUCCESS_STATUS,Constant.LOG_OUT_MESSAGE,Constant.LOG_OUT_TITLE);
+  globalResponse(
+    res,
+    Constant.SUCCESS_STATUS,
+    Constant.LOG_OUT_MESSAGE,
+    Constant.LOG_OUT_TITLE
+  );
+};
+
+export const verifyUserId = async (req, res) => {
+  try {
+    const userId = req.query.userId;
+    const isUserIdUnique = User.findOne({ userId });
+    if (isUserIdUnique == undefined || isUserIdUnique == null) {
+      return globalResponse(
+        res,
+        Constant.SUCCESS_STATUS,
+        Constant.ENTERED_USER_ID_UNIQUE,
+        "Verify User Id"
+      );
+    }
+
+    return globalResponse(
+      res,
+      Constant.DUPLICATE_REQUEST_STATUS,
+      Constant.DUPLICATE_REQUEST_MESSAGE,
+      Constant.DUPLICATE_REQUEST_TITLE
+    );
+  } catch (error) {
+    return globalResponse(
+      res,
+      Constant.SOMETHING_WENT_WRONG_STATUS,
+      Constant.SOMETHING_WENT_WRONG_MESSAGE,
+      Constant.SOMETHING_WENT_WRONG_TITLE
+    );
+  }
+};
+
+export const checkUser = (req, res) =>{
+   try{
+      return res.status(200).json({
+        message: "User authentication Successful",
+        user: req.user
+      })
+   }catch(error){
+     console.log("From checkUser line number 183 under authController.js");
+     console.log(error);
+    return res.status(500).json({
+       message: "Unable to check the user something went wrong Please try again to login"
+     })
+   }
 }
