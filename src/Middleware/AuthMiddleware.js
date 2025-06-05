@@ -51,3 +51,24 @@ export const authMiddleware =  async(req, res, next)=>{
         })
     }
 }
+
+export const checkAdmin = (req,res,next) => {
+    try{
+        let role = req.user.role;
+        req.isAdmin = false;
+        req.isProblemSetter = false;
+        if(role === 'admin'){
+            req.isAdmin = true;
+            req.isProblemSetter = false;
+        }else if(role === 'problem-setter'){
+            req.isAdmin = false;
+            req.isProblemSetter = true;
+        }      
+        next();
+    }catch(error){
+        console.log(error);
+        return res.status(500).json({
+            message: "Something Went wrong in checkAdmin middleware please check the log"
+        })
+    }
+}

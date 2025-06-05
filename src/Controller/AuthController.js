@@ -190,3 +190,24 @@ export const checkUser = (req, res) =>{
      })
    }
 }
+export const updateUserRole = async (req, res) =>{
+  try{
+    if(!req.isAdmin){
+      res.status(401).json({
+        message: "Access denied Only Admin can change the user role"
+      })
+    }
+    const userId = req.query.id;
+    const user = await User.findById(userId);
+    user.role =  req.body.role;
+    await user.save();
+    return res.status(201).json({
+      message: "User Role Updated sccessfully"
+    })
+  }catch(error){
+    console.log(error);
+    return res.status(500).json({
+      message: "Something went wrong please again after sometime"
+    })
+  }
+}

@@ -5,6 +5,9 @@ import ProblemRoutes from "./Routes/Problem/ProblemRoutes.js";
 import ConnectWithDB from "./Utils/Database/db.js";
 import cors from 'cors';
 import cookieParser from "cookie-parser";
+import swaggerJSDoc from "swagger-jsdoc";
+import swaggarUI from 'swagger-ui-express'
+
 dotenv.config();
 
 const app = express();
@@ -15,15 +18,37 @@ app.use(
         methods: ['GET','POST','PATCH'], // Please note methods are not case sensitive
         allowedHeaders: ['Content-Type','Authorization'] //this is case sensitive
     })
-)
+);
+const options = {
+  definition: {
+    openapi: "3.1.0",
+    info: {
+      title: "Express API with Swagger",
+      version: "0.1.0",
+      description:
+        "This is a simple CRUD API application made with Express and documented with Swagger",
+    },
+    servers: [
+      {
+        url: "http://localhost:8080/api/v2/auth",
+      },{
+        url: "http://localhost:8080/api/v2/problem",
+      }
+    ],
+  },
+  apis: ['../src/Routes/Auth/*.js'], // Path to the API docs
+};
 
 app.use(express.json()); // this middleware help us to get input in json
 app.use(cookieParser()); // here we are initialization of cookie parser using middleware 
 app.use(express.urlencoded({extended: true}));
 
-app.use('/api/v2/auth',AuthRoutes);
-app.use('/api/v2/problem',ProblemRoutes)
 
+
+app.use('/api/v2/auth',AuthRoutes);
+app.use('/api/v2/problem',ProblemRoutes);
+const specs = swaggerJSDoc(options);
+app.use('/api/docs',swaggarUI.serve,swaggarUI.setup(specs,{ explorer: true }));
 app.get('/happy',(req,res)=>{
     res.status(200).send({
         message: "I am very happpy"
