@@ -12,11 +12,9 @@ const problemSchema = mongoose.Schema({
     company: Array,
     liked: {
         type: Array,
-        unique: true
     },
     disLiked: {
         type: Array,
-        unique: true
     },
     solved: {
         type: Array,
@@ -29,6 +27,13 @@ const problemSchema = mongoose.Schema({
     title: String,
     discription: String,
     constraiants: String,
+    inputFormat: String,
+    outputFormat: String,
+    sampleInput: String,
+    sampleOutput: String,
+    referenceSolution: {
+        type: Schema.Types.Mixed
+    },
     example: {
         type: Schema.Types.Mixed
     },
